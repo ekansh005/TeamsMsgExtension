@@ -2,13 +2,13 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.10/MicrosoftTeams.schema.json",
   "manifestVersion": "1.10",
   "id": "35a83030-712b-11ec-8512-3f6f0a4ee715",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "packageName": "messagingext",
   "developer": {
     "name": "Codeterian",
-    "websiteUrl": "https://d18b-88-192-41-19.ngrok.io",
-    "privacyUrl": "https://d18b-88-192-41-19.ngrok.io/privacy.html",
-    "termsOfUseUrl": "https://d18b-88-192-41-19.ngrok.io/tou.html"
+    "websiteUrl": "https://2707-88-192-41-19.ngrok.io",
+    "privacyUrl": "https://2707-88-192-41-19.ngrok.io/privacy.html",
+    "termsOfUseUrl": "https://2707-88-192-41-19.ngrok.io/tou.html"
   },
   "name": {
     "short": "Planet Messaging",
@@ -40,6 +40,18 @@
         "message"
       ],
       "fetchTask": true
+    }, {
+      "id": "planetLookupMessageExtension",
+      "type": "query",
+      "title": "Planet Lookup",
+      "description": "Search for a planet.",
+      "context": ["compose"],
+      "initialRun": false,
+      "parameters": [{
+        "name": "searchKeyword",
+        "description": "Enter 'inner','outer' or the name of a specific planet",
+        "title": "Planet"
+      }]
     }]
   }],
   "permissions": [
@@ -47,7 +59,7 @@
     "messageTeamMembers"
   ],
   "validDomains": [
-    "d18b-88-192-41-19.ngrok.io"
+    "2707-88-192-41-19.ngrok.io"
   ],
   "showLoadingIndicator": false
 }
