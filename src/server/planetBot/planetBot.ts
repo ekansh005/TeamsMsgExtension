@@ -5,7 +5,9 @@ import {
     CardFactory,
     MessagingExtensionAction,
     MessagingExtensionActionResponse,
-    MessagingExtensionAttachment
+    MessagingExtensionAttachment,
+    MessagingExtensionQuery,
+    MessagingExtensionResponse
 } from "botbuilder";
 import * as Util from "util";
 import * as debug from "debug";
@@ -97,5 +99,57 @@ export class PlanetBot extends TeamsActivityHandler {
 
         // return the adaptive card
         return CardFactory.adaptiveCard(adaptiveCardSource);
+    }
+
+    protected handleTeamsMessagingExtensionQuery(
+        context: TurnContext,
+        query: MessagingExtensionQuery
+    ): Promise<MessagingExtensionResponse> {
+        // get the search query
+        let searchQuery = "";
+        if (query && query.parameters && query.parameters.length > 0 && query.parameters[0].name === "searchKeyword" && query.parameters[0].value) {
+            searchQuery = query.parameters[0].value.trim().toLowerCase();
+        }
+
+        // load planets
+        const planets: any = require("./planets.json");
+        // search results
+        let queryResults: String[] = [];
+
+        switch (searchQuery) {
+            case "inner":
+                // get all planets inside asteroid belt
+                queryResults = planets.filter((planet) => planet.id <= 4);
+                break;
+            case "outer":
+                // get all planets outside asteroid belt
+                queryResults = planets.filter((planet) => planet.id > 4);
+                break;
+            default:
+                // get the specified planet
+                queryResults.push(planets.filter((planet) => planet.name.toLowerCase() === searchQuery)[0]);
+                break;
+        }
+
+        // get the results as card
+        const searchResultCards: MessagingExtensionAttachment[] = [];
+        queryResults.forEach((planet) => {
+            searchResultCards.push(this.getPlanetResultCard(planet));
+        });
+
+        // generate the response
+        const response: MessagingExtensionResponse = {
+            composeExtension: {
+                type: "result",
+                attachmentLayout: "list",
+                attachments: searchResultCards
+            }
+        } as MessagingExtensionResponse;
+
+        return Promise.resolve(response);
+    }
+
+    private getPlanetResultCard(planet: any): MessagingExtensionAttachment {
+        return CardFactory.heroCard(planet.name, planet.summary, [{ url: planet.imageLink }]);
     }
 }
