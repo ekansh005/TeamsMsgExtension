@@ -7,7 +7,9 @@ import {
     MessagingExtensionActionResponse,
     MessagingExtensionAttachment,
     MessagingExtensionQuery,
-    MessagingExtensionResponse
+    MessagingExtensionResponse,
+    AppBasedLinkQuery,
+    MessagingExtensionResult
 } from "botbuilder";
 import * as Util from "util";
 import * as debug from "debug";
@@ -151,5 +153,20 @@ export class PlanetBot extends TeamsActivityHandler {
 
     private getPlanetResultCard(planet: any): MessagingExtensionAttachment {
         return CardFactory.heroCard(planet.name, planet.summary, [{ url: planet.imageLink }]);
+    }
+
+    protected handleTeamsAppBasedLinkQuery(context: TurnContext, query: AppBasedLinkQuery): Promise<MessagingExtensionResponse> {
+        // load planets
+        const planets: any = require("./planets.json");
+        // get the selected planet
+        const selectedPlanet: any = planets.filter((planet) => planet.wikiLink === query.url)[0];
+        const heroCard = CardFactory.heroCard(selectedPlanet.name, selectedPlanet.summary, [selectedPlanet.imageLink]);
+
+        // generate the response
+        return Promise.resolve({
+            type: "result",
+            attachmentLayout: "list",
+            attachments: [heroCard]
+        } as MessagingExtensionResponse);
     }
 }
